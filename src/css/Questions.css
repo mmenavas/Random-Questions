@@ -1,2 +1,11 @@
 .Questions {
+    margin: 0;
+    padding: 0;
+}
+.Questions li {
+    list-style-type: none;
+    list-style-image: none;
+    list-style-position: outside;
+    margin: 0;
+    padding: 0;
 }

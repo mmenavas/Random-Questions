@@ -6,7 +6,7 @@ class Question extends Component {
         return (
             <div className="Question">
                 <p className="Question-content">
-                    {this.props.content}
+                    {this.props.question}
                 </p>
                 <p className="Question-category">
                     {this.props.category}
