@@ -1,19 +1,23 @@
 import React, { Component } from 'react';
-import Question from './Question';
+import SearchBar from './SearchBar';
+import QuestionsTable from './QuestionsTable';
 import * as firebase from 'firebase';
-import '../css/Questions.css';
 
-
-class Questions extends Component {
+class FilterableQuestionsTable extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {questions: []};
 
+        this.state = {
+            questions: [],
+            filterText: ''
+        };
+
+        this.handleUserInput = this.handleUserInput.bind(this);
     }
 
     componentDidMount() {
-         // Initialize Firebase
+        // Initialize Firebase
         const config = {
             apiKey: "AIzaSyC8gRjneI90v_IqgHFqd8WH0280mVGBf7k",
             authDomain: "random-questions.firebaseapp.com",
@@ -32,11 +36,10 @@ class Questions extends Component {
                 snapshot.forEach(function(childSnapshot) {
                     var key = childSnapshot.key;
                     var childData = childSnapshot.val();
-                    console.log(key);
-                    console.log(childData);
                     questions.push({
                         key: key,
                         question: childData['Question'],
+                        author: childData['Author'],
                         category: childData['Category'],
                         votes:    childData['Votes']
                     });
@@ -49,16 +52,28 @@ class Questions extends Component {
     componentWillUnmount() {
         this.serverRequest.abort();
     }
+
+    handleUserInput(filterText) {
+        this.setState({
+            filterText: filterText,
+        });
+    }
+
     render() {
         return (
-            <ul className="Questions">
-                {this.state.questions.map(function(item) {
-                    return <li key={item.key}><Question question={item.question} category={item.category} votes={item.votes} /></li>
-                })}
-            </ul>
+            <div>
+                <SearchBar
+                    filterText={this.state.filterText}
+                    onUserInput={this.handleUserInput}
+                />
+                <QuestionsTable
+                    questions={this.state.questions}
+                    filterText={this.state.filterText}
+                />
+            </div>
         );
     }
 
 }
 
-export default Questions;
+export default FilterableQuestionsTable;

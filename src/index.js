@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Questions from './components/Questions';
+import FilterableQuestionsTable from './components/FilterableQuestionsTable';
 import './css/index.css';
 
 ReactDOM.render(
-    <Questions />,
+    <FilterableQuestionsTable />,
     document.getElementById('root')
 );
 
