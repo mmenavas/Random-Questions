@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import SearchBar from './SearchBar';
 import QuestionsTable from './QuestionsTable';
+import InsertBar from './InsertBar';
 import * as firebase from 'firebase';
 
 class FilterableQuestionsTable extends Component {
@@ -13,7 +14,8 @@ class FilterableQuestionsTable extends Component {
             filterText: ''
         };
 
-        this.handleUserInput = this.handleUserInput.bind(this);
+        this.handleSearchInput = this.handleSearchInput.bind(this);
+        this.handleAddQuestionSubmit = this.handleAddQuestionSubmit.bind(this);
     }
 
     componentDidMount() {
@@ -28,14 +30,14 @@ class FilterableQuestionsTable extends Component {
             .initializeApp(config)
             .database()
             .ref();
-        var query = fb.child('Questions').orderByKey();
-        var _this = this;
+        let query = fb.child('Questions').orderByKey();
+        let _this = this;
         this.serverRequest =
             query.once("value").then(function(snapshot) {
-                var questions = [];
+                let questions = [];
                 snapshot.forEach(function(childSnapshot) {
-                    var key = childSnapshot.key;
-                    var childData = childSnapshot.val();
+                    let key = childSnapshot.key;
+                    let childData = childSnapshot.val();
                     questions.push({
                         key: key,
                         question: childData['Question'],
@@ -53,10 +55,41 @@ class FilterableQuestionsTable extends Component {
         this.serverRequest.abort();
     }
 
-    handleUserInput(filterText) {
+    handleSearchInput(filterText) {
         this.setState({
             filterText: filterText,
         });
+    }
+
+    handleAddQuestionSubmit(values) {
+        let question = values['question'];
+        let category = values['category'];
+
+        this.addNewQuestionOnServer(question, category);
+
+        this.setState({
+            question: '',
+            author:   '',
+            category: '',
+            votes:    ''
+        });
+        
+    }
+
+    addNewQuestionOnServer(question, category) {
+        const newPostKey = firebase.database().ref().child('Questions').push().key;
+        var postData = {
+            Question: question,
+            Category: category,
+            Author: "anonymous",
+            votes: 0
+        };
+
+        let updates = {};
+        updates['/Questions/' + newPostKey] = postData;
+        //updates['/user-posts/' + uid + '/' + newPostKey] = postData;
+
+        return firebase.database().ref().update(updates);
     }
 
     render() {
@@ -64,11 +97,14 @@ class FilterableQuestionsTable extends Component {
             <div>
                 <SearchBar
                     filterText={this.state.filterText}
-                    onUserInput={this.handleUserInput}
+                    onUserInput={this.handleSearchInput}
                 />
                 <QuestionsTable
                     questions={this.state.questions}
                     filterText={this.state.filterText}
+                />
+                <InsertBar
+                    onAddQuestionSubmit={this.handleAddQuestionSubmit}
                 />
             </div>
         );
