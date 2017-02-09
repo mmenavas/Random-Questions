@@ -9,16 +9,6 @@ class FilterableQuestionsTable extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            questions: [],
-            filterText: ''
-        };
-
-        this.handleSearchInput = this.handleSearchInput.bind(this);
-        this.handleAddQuestionSubmit = this.handleAddQuestionSubmit.bind(this);
-    }
-
-    componentDidMount() {
         // Initialize Firebase
         const config = {
             apiKey: "AIzaSyC8gRjneI90v_IqgHFqd8WH0280mVGBf7k",
@@ -30,7 +20,24 @@ class FilterableQuestionsTable extends Component {
             .initializeApp(config)
             .database()
             .ref();
-        let query = fb.child('Questions').orderByKey();
+
+        this.state = {
+            questions: [],
+            filterText: '',
+            database: fb
+        };
+
+        this.handleSearchInput = this.handleSearchInput.bind(this);
+        this.handleAddQuestionSubmit = this.handleAddQuestionSubmit.bind(this);
+
+    }
+
+    componentDidMount() {
+        this.fetchQuestions();
+    }
+
+    fetchQuestions() {
+        let query = this.state.database.child('Questions').orderByKey();
         let _this = this;
         this.serverRequest =
             query.once("value").then(function(snapshot) {
@@ -48,7 +55,6 @@ class FilterableQuestionsTable extends Component {
                 });
                 _this.setState({questions: questions});
             });
-
     }
 
     componentWillUnmount() {
@@ -64,20 +70,18 @@ class FilterableQuestionsTable extends Component {
     handleAddQuestionSubmit(values) {
         let question = values['question'];
         let category = values['category'];
+        let _this = this;
 
-        this.addNewQuestionOnServer(question, category);
-
-        this.setState({
-            question: '',
-            author:   '',
-            category: '',
-            votes:    ''
+        this.writeQuestion(question, category).then(function(response) {
+            _this.fetchQuestions();  // Making a new call to the server is not efficient
+        }).catch(function (error) {
+            console.log(error);
         });
         
     }
 
-    addNewQuestionOnServer(question, category) {
-        const newPostKey = firebase.database().ref().child('Questions').push().key;
+    writeQuestion(question, category) {
+        const newPostKey = this.state.database.child('Questions').push().key;
         var postData = {
             Question: question,
             Category: category,
