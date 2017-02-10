@@ -2,7 +2,7 @@
   "name": "random-questions",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://mmenavas.github.io/random-questions",
+  "homepage": "http://questions.1-on-1conversations.com",
   "devDependencies": {
     "react-scripts": "0.8.5"
   },
