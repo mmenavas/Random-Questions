@@ -1,0 +1,44 @@
+.Anonymous-User, .User--Info {
+    background-color: rgba(255,255,255,.5);
+    overflow: hidden;
+    margin-bottom: 16px;
+    border-radius: 5px;
+}
+.User--Log-In-Headline {
+    box-sizing: border-box;
+    font-size: 1.5em;
+    text-align: center;
+    margin: 16px 0 8px;
+}
+.User--Log-In-Text {
+    box-sizing: border-box;
+    font-size: 1em;
+    text-align: center;
+    margin: 16px 0 8px;
+}
+
+.User--Info {
+    font-size: 1.1em;
+    text-align: center;
+    margin: 0 0 8px;
+}
+
+.User--Sign-Out {
+    margin: 0 0 8px;
+    background-color: #fd941d;
+    color: #fff;
+    padding: 5px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* Large Devices */
+@media only screen and (min-width : 600px) {
+    .User--Log-In-Prompt {
+        padding: 10px;
+        margin-top: 10px;
+    }
+    .User--Sign-Out {
+        margin-top:8px;
+    }
+}

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import '../css/InsertBar.css';
 
 class InsertBar extends Component {
     constructor(props) {
@@ -35,7 +36,10 @@ class InsertBar extends Component {
         }
 
         //Here we do the final submit to the parent component
-        this.props.onAddQuestionSubmit({question: question, category: category});
+        this.props.onAddQuestionSubmit({
+            question: question,
+            category: category}
+        );
 
         this.setState({
             question: '',
@@ -45,28 +49,37 @@ class InsertBar extends Component {
 
     render() {
         return (
-            <form onSubmit={this.handleSubmit}>
-                <input
-                    type="text"
-                    placeholder="New question"
-                    name="question"
-                    onChange={this.handleQuestionChange}
-                    value={this.state.question ? this.state.question : ''}
-                />
-                <input
-                    type="text"
-                    placeholder="Category"
-                    name="category"
-                    onChange={this.handleCategoryChange}
-                    value={this.state.category ? this.state.category : ''}
-                />
-                <input
-                    type="submit"
-                    value="Add Question"
-                />
-            </form>
+            <div className="Insert-Bar">
+                <form className="Insert-Bar--Form col-10" onSubmit={this.handleSubmit}>
+                    <div className="left col-4">
+                        <input
+                            type="text"
+                            placeholder="New question"
+                            name="question"
+                            onChange={this.handleQuestionChange}
+                            value={this.state.question ? this.state.question : ''}
+                        />
+                    </div>
+                    <div className="left col-3">
+                        <input
+                            type="text"
+                            placeholder="Category"
+                            name="category"
+                            onChange={this.handleCategoryChange}
+                            value={this.state.category ? this.state.category : ''}
+                        />
+                    </div>
+                    <div className="left col-3">
+                        <input
+                            type="submit"
+                            value="Add Question"
+                        />
+                    </div>
+                </form>
+            </div>
         );
     }
 }
 
 export default InsertBar;
+

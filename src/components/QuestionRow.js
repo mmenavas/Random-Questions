@@ -6,7 +6,7 @@ class QuestionRow extends Component {
         return (
             <tr>
                 <td>{this.props.question}</td>
-                <td>{this.props.author}</td>
+                <td><strong title={this.props.email}>{this.props.author}</strong></td>
                 <td>{this.props.category}</td>
                 <td>{this.props.votes}</td>
             </tr>

@@ -1,0 +1,38 @@
+.Insert-Bar {
+    overflow: hidden;
+    background-color: rgba(255,255,255,.25);
+    border-radius: 8px;
+    padding: 8px;
+    box-sizing: border-box;
+    margin-bottom: 8px;
+}
+
+.Insert-Bar--Form {
+    box-sizing: border-box;
+}
+
+.Insert-Bar--Form > div {
+    padding:0 4px;
+}
+
+
+.Insert-Bar--Form input[type="text"] {
+    font-size: 1em;
+    padding: 8px;
+    box-sizing: border-box;
+    border-radius: 4px;
+    border: 1px #ddd solid;
+    background-color: #fff;
+    margin: 8px 0;
+    width: 100%;
+}
+.Insert-Bar--Form input[type="submit"] {
+    margin: 8px 0;
+    color: #fff;
+    padding: 8px 12px;
+    box-sizing: border-box;
+    background-color: #016fb9;
+    border-radius:8px;
+    cursor: pointer;
+    width: 100%;
+}

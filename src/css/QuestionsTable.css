@@ -1,11 +1,15 @@
 .Questions {
-    margin: 0;
-    padding: 0;
+    width:100%;
+    text-align: left;
+    margin-bottom: 20px;
 }
-.Questions li {
-    list-style-type: none;
-    list-style-image: none;
-    list-style-position: outside;
-    margin: 0;
-    padding: 0;
+
+.Questions th, td {
+    padding:5px;
+    background-color: rgba(255,255,255,.9);
+}
+
+.Questions th {
+    background-color:#fd941d;
+    color:#fff;
 }
