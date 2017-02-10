@@ -5,15 +5,13 @@ import '../css/User.css';
 class User extends Component {
     constructor(props) {
         super(props);
-        this.handleClick = this.handleClick.bind(this);
+        this.handleSignOut = this.handleSignOut.bind(this);
         this.handleAddQuestionSubmit = this.handleAddQuestionSubmit.bind(this);
-
     }
 
-    handleClick() {
-        //Here we do the final submit to the parent component
+    handleSignOut() {
+        // Pass event to parent component
         this.props.onSignOut();
-        console.log("Sign out");
     }
 
     handleAddQuestionSubmit(values) {
@@ -42,7 +40,7 @@ class User extends Component {
                             <p>You are logged in as <strong title={this.props.email}>{this.props.author}</strong></p>
                         </div>
                         <div className="right">
-                            <button className="User--Sign-Out" onClick={this.handleClick}>Sign out</button>
+                            <button className="User--Sign-Out" onClick={this.handleSignOut}>Sign out</button>
                         </div>
                     </div>
                     <InsertBar

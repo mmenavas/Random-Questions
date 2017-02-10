@@ -43,7 +43,7 @@ class InsertBar extends Component {
 
         this.setState({
             question: '',
-            category: '',
+            category: ''
         });
     }
 

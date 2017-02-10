@@ -34,6 +34,7 @@ class FilterableQuestionsTable extends Component {
 
         this.handleSearchInput = this.handleSearchInput.bind(this);
         this.handleAddQuestionSubmit = this.handleAddQuestionSubmit.bind(this);
+        this.handleOnVote = this.handleOnVote.bind(this);
         this.handleSignOut = this.handleSignOut.bind(this);
     }
 
@@ -113,7 +114,7 @@ class FilterableQuestionsTable extends Component {
         let _this = this;
 
         this.writeQuestion(question, category).then(function(response) {
-            _this.fetchQuestions();  // Making a new call to the server is not efficient
+            _this.fetchQuestions();  // Todo: Making a new call to the server is not efficient
         }).catch(function (error) {
             console.log(error);
         });
@@ -139,6 +140,32 @@ class FilterableQuestionsTable extends Component {
         let updates = {};
         updates['/Questions/' + newPostKey] = postData;
         //updates['/user-posts/' + uid + '/' + newPostKey] = postData;
+
+        return firebase.database().ref().update(updates);
+    }
+
+    handleOnVote(index, votes) {
+        let _this = this;
+
+        this.vote(index, votes).then(function(response) {
+            _this.fetchQuestions();  // Todo: Making a new call to the server is not efficient
+        }).catch(function (error) {
+            console.log(error);
+        });
+
+    }
+
+    vote(index, votes) {
+        let updates = {};
+        let currentQuestion = this.state.questions[index];
+        var postData = {
+            Question: currentQuestion.question,
+            Category: currentQuestion.category,
+            Author: currentQuestion.author,
+            Email: currentQuestion.email,
+            Votes: (currentQuestion.votes + votes) * -1
+        };
+        updates['/Questions/' + currentQuestion.key] = postData;
 
         return firebase.database().ref().update(updates);
     }
@@ -172,8 +199,10 @@ class FilterableQuestionsTable extends Component {
                     onAddQuestionSubmit={this.handleAddQuestionSubmit}
                 />
                 <QuestionsTable
+                    email={this.state.email}
                     questions={this.state.questions}
                     filterText={this.state.filterText}
+                    onVote={this.handleOnVote}
                 />
             </div>
         );

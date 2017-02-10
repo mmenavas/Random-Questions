@@ -4,9 +4,17 @@ import '../css/QuestionsTable.css';
 
 
 class QuestionsTable extends Component {
-
+    constructor(props) {
+        super(props);
+        this.handleOnVote = this.handleOnVote.bind(this);
+    }
+    handleOnVote(index, votes) {
+        this.props.onVote(index, votes);
+    }
     render() {
-        var rows = [];
+        let rows = [];
+        let index = 0;
+
         this.props.questions.forEach((item) => {
             if (item.question.toUpperCase().indexOf(this.props.filterText.toUpperCase()) === -1 &&
                 item.author.toUpperCase().indexOf(this.props.filterText.toUpperCase()) === -1 &&
@@ -14,7 +22,20 @@ class QuestionsTable extends Component {
             ) {
                 return;
             }
-            rows.push(<QuestionRow key={item.key} question={item.question} author={item.author} email={item.email} category={item.category} votes={item.votes}/>);
+            rows.push(
+                <QuestionRow
+                    key={item.key}
+                    index={index}
+                    question={item.question}
+                    author={item.author}
+                    email={item.email}
+                    category={item.category}
+                    votes={item.votes}
+                    userEmail={this.props.email}
+                    onVote={this.handleOnVote}
+                />
+            );
+            index++;
         });
         
         return (

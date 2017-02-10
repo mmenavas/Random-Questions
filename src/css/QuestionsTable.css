@@ -13,3 +13,7 @@
     background-color:#fd941d;
     color:#fff;
 }
+
+td.votes-cell {
+    text-align: center;
+}
