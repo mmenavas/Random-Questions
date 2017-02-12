@@ -31,6 +31,7 @@ class QuestionsTable extends Component {
                     email={item.email}
                     category={item.category}
                     votes={item.votes}
+                    userVotes={item.userVotes}
                     userEmail={this.props.email}
                     onVote={this.handleOnVote}
                 />
@@ -42,10 +43,10 @@ class QuestionsTable extends Component {
             <table className="Questions">
                 <thead>
                 <tr>
-                    <th>Question</th>
-                    <th>Author</th>
-                    <th>Category</th>
-                    <th>Votes</th>
+                    <th className="Question-Header">Question</th>
+                    <th className="Author-Header">Author</th>
+                    <th className="Category-Header">Category</th>
+                    <th className="Votes-Header">Votes</th>
                 </tr>
                 </thead>
                 <tbody>{rows}</tbody>

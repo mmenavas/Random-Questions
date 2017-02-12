@@ -15,11 +15,24 @@ class Plus1 extends Component {
             return (<span></span>);
         }
         else {
+            let options = [];
+            console.log(this.props.userVotes);
+            for (let i = 1; i <= 3; i++) {
+                if (i == this.props.userVotes) {
+                    options.push(
+                        <button key={i} className="Plus1-Widget--plus-1 selected">+{this.props.userVotes}</button>
+                    );
+                }
+                else {
+                    options.push(
+                        <button onClick={this.handleClick.bind(null, i)} key={i} className="Plus1-Widget--plus-1">+{i}</button>
+                    );
+                }
+            }
+
             return (
                 <div className="Plus1-Widget">
-                    <button onClick={this.handleClick.bind(null, 1)} className="Plus1-Widget--plus-1">+1</button>
-                    <button onClick={this.handleClick.bind(null, 2)} className="Plus1-Widget--plus-2">+2</button>
-                    <button onClick={this.handleClick.bind(null, 3)} className="Plus1-Widget--plus-3">+3</button>
+                    {options}
                 </div>
             );
         }

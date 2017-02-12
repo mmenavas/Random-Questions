@@ -14,6 +14,18 @@
     color:#fff;
 }
 
-td.votes-cell {
+.Question-Header {
+    width:50%;
+}
+.Author-Header {
+    width:10%;
+}
+.Category-Header {
+    width:10%;
+}
+.Votes-Header {
+    width:20%;
+}
+.Votes-Cell {
     text-align: center;
 }

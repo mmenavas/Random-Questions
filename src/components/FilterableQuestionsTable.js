@@ -118,19 +118,27 @@ class FilterableQuestionsTable extends Component {
         this.serverRequest =
             query.once("value").then(function(snapshot) {
                 let questions = [];
+                let promises = [];
                 snapshot.forEach(function(childSnapshot) {
                     let key = childSnapshot.key;
                     let childData = childSnapshot.val();
-                    questions.push({
-                        key:      key,
-                        question: childData['Question'],
-                        author:   childData['Author'],
-                        email:    childData['Email'],
-                        category: childData['Category'],
-                        votes:    childData['Votes'] * -1
-                    });
+                    let userVotes = 0;
+                    promises.push(_this.getUserVote(key).then(function(value) {
+                        userVotes = value;
+                        questions.push({
+                            key:       key,
+                            question:  childData['Question'],
+                            author:    childData['Author'],
+                            email:     childData['Email'],
+                            category:  childData['Category'],
+                            votes:     childData['Votes'] * -1,
+                            userVotes: userVotes * -1,
+                        });
+                    }));
                 });
-                _this.setState({questions: questions});
+                Promise.all(promises).then(function() {
+                    _this.setState({questions: questions});
+                });
             });
     }
 
@@ -152,35 +160,37 @@ class FilterableQuestionsTable extends Component {
 
         let updates = {};
         updates['/Questions/' + newPostKey] = postData;
-        //updates['/user-posts/' + uid + '/' + newPostKey] = postData;
 
         return firebase.database().ref().update(updates);
     }
 
     vote(index, votes) {
         let currentQuestion = this.state.questions[index];
-        let oldVote = 0;
         let questionData = {
             Question: currentQuestion.question,
             Category: currentQuestion.category,
             Author: currentQuestion.author,
             Email: currentQuestion.email,
-            Votes: (currentQuestion.votes + votes) * -1
+            Votes: (currentQuestion.votes + votes - currentQuestion.userVotes) * -1
         };
-        let query = this.state.database.child('Votes/' + currentQuestion.key).orderByKey().equalTo(this.state.uid);
+
         let updates = {};
         updates['/Questions/' + currentQuestion.key] = questionData;
         updates['/Votes/' + currentQuestion.key + '/' + this.state.uid] = votes * -1;
 
+        return firebase.database().ref().update(updates);
+
+    }
+
+    getUserVote(questionKey) {
+        let userVotes = 0;
+        let query = this.state.database.child('Votes/' + questionKey).orderByKey().equalTo(this.state.uid);
         this.serverRequest =
             query.once("value").then(function(snapshot) {
                 snapshot.forEach(function(childSnapshot) {
-                    oldVote = childSnapshot.val();
-                    questionData.Votes = (currentQuestion.votes + votes + oldVote) * -1
+                    userVotes = childSnapshot.val();
                 });
-                return firebase.database().ref().update(updates);
-            }).catch(function(v) {
-                return firebase.database().ref().update(updates);
+                return userVotes;
             });
 
         return this.serverRequest;
