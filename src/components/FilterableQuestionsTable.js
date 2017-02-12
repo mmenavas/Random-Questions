@@ -8,7 +8,7 @@ import '../css/Firebaseui.css';
 import '../css/FilterableQuestionsTable.css';
 
 class FilterableQuestionsTable extends Component {
-
+    // Default methods
     constructor(props) {
         super(props);
 
@@ -48,7 +48,8 @@ class FilterableQuestionsTable extends Component {
                 // User is signed in.
                 _this.setState({
                     author: user.displayName,
-                    email: user.email
+                    email: user.email,
+                    uid: user.uid
                 });
 
             } else {
@@ -76,6 +77,41 @@ class FilterableQuestionsTable extends Component {
 
     }
 
+    componentWillUnmount() {
+        this.serverRequest.abort();
+    }
+
+    // Event handling methods
+    handleAddQuestionSubmit(values) {
+        let question = values['question'];
+        let category = values['category'];
+        let _this = this;
+
+        this.writeQuestion(question, category).then(function(response) {
+            _this.fetchQuestions();  // Todo: Making a new call to the server is not efficient
+        }).catch(function (error) {
+            console.log(error);
+        });
+        
+    }
+
+    handleOnVote(index, votes) {
+        let _this = this;
+
+        this.vote(index, votes).then(function(response) {
+            _this.fetchQuestions();  // Todo: Making a new call to the server is not efficient
+        }).catch(function (error) {
+            console.log(error);
+        });
+
+    }
+
+    handleSearchInput(filterText) {
+        this.setState({
+            filterText: filterText,
+        });
+    }
+
     fetchQuestions() {
         let query = this.state.database.child('Questions').orderByChild('Votes');
         let _this = this;
@@ -98,29 +134,6 @@ class FilterableQuestionsTable extends Component {
             });
     }
 
-    componentWillUnmount() {
-        this.serverRequest.abort();
-    }
-
-    handleSearchInput(filterText) {
-        this.setState({
-            filterText: filterText,
-        });
-    }
-
-    handleAddQuestionSubmit(values) {
-        let question = values['question'];
-        let category = values['category'];
-        let _this = this;
-
-        this.writeQuestion(question, category).then(function(response) {
-            _this.fetchQuestions();  // Todo: Making a new call to the server is not efficient
-        }).catch(function (error) {
-            console.log(error);
-        });
-        
-    }
-
     writeQuestion(question, category) {
         const newPostKey = this.state.database.child('Questions').push().key;
         let author = 'Anonymous';
@@ -129,7 +142,7 @@ class FilterableQuestionsTable extends Component {
             author = this.state.author;
             email = this.state.email;
         }
-        var postData = {
+        let postData = {
             Question: question,
             Category: category,
             Author: author,
@@ -144,30 +157,33 @@ class FilterableQuestionsTable extends Component {
         return firebase.database().ref().update(updates);
     }
 
-    handleOnVote(index, votes) {
-        let _this = this;
-
-        this.vote(index, votes).then(function(response) {
-            _this.fetchQuestions();  // Todo: Making a new call to the server is not efficient
-        }).catch(function (error) {
-            console.log(error);
-        });
-
-    }
-
     vote(index, votes) {
-        let updates = {};
         let currentQuestion = this.state.questions[index];
-        var postData = {
+        let oldVote = 0;
+        let questionData = {
             Question: currentQuestion.question,
             Category: currentQuestion.category,
             Author: currentQuestion.author,
             Email: currentQuestion.email,
             Votes: (currentQuestion.votes + votes) * -1
         };
-        updates['/Questions/' + currentQuestion.key] = postData;
+        let query = this.state.database.child('Votes/' + currentQuestion.key).orderByKey().equalTo(this.state.uid);
+        let updates = {};
+        updates['/Questions/' + currentQuestion.key] = questionData;
+        updates['/Votes/' + currentQuestion.key + '/' + this.state.uid] = votes * -1;
 
-        return firebase.database().ref().update(updates);
+        this.serverRequest =
+            query.once("value").then(function(snapshot) {
+                snapshot.forEach(function(childSnapshot) {
+                    oldVote = childSnapshot.val();
+                    questionData.Votes = (currentQuestion.votes + votes + oldVote) * -1
+                });
+                return firebase.database().ref().update(updates);
+            }).catch(function(v) {
+                return firebase.database().ref().update(updates);
+            });
+
+        return this.serverRequest;
     }
 
     handleSignOut() {
@@ -178,6 +194,7 @@ class FilterableQuestionsTable extends Component {
         });
     }
 
+    // Render method
     render() {
         return (
             <div className="Random-Questions">
